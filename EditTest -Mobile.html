@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EditTest</title>
+</head>
+
+<body>
+    <div id="box">
+        <div id="validLast"></div>
+        <div id="fraction"></div>
+        <div class="row" id="line1"></div>
+        <div class="row" id="judge1"></div>
+        <div class="row" id="line2"></div>
+        <div class="row" id="judge2"></div>
+        <div class="row" id="line3"></div>
+        <div class="row" id="judge3"></div>
+        <div class="row" id="line4"></div>
+        <div class="row" id="judge4"></div>
+        <div class="row" id="line5"></div>
+        <div class="row" id="judge5"></div>
+        <div id="submit"></div>
+    </div>
+</body>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        /* width: 100vh; */
+    }
+
+    #box {
+        /* margin: 50px 0 0 0; */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        /* transform: scale(0.8); */
+    }
+
+    #validLast {
+        margin: 0 0 50px 0;
+        font-size: 18px;
+        height: 50px;
+        display: none;
+    }
+
+    #fraction {
+        margin: 0 0 50px 0;
+        height: 50px;
+        font-weight: bold;
+        font-size: 35px;
+        display: none;
+    }
+
+    .row {
+        height: 55px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        display: none;
+    }
+
+    #judge1 {
+        margin: 0 0 10px 0;
+    }
+
+    .item1 {
+        margin: 15px;
+        width: 135px;
+        height: 35px;
+        background-color: aliceblue;
+        border: 1px solid lightskyblue;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        user-select: none;
+        /* color: lightskyblue; */
+        user-select: none;
+    }
+
+    /* .item1:hover {
+        transform: scale(1.04);
+    } */
+
+    .item2 {
+        margin: 15px;
+        width: 135px;
+        height: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        cursor: pointer;
+        user-select: none;
+    }
+
+
+
+    .yes {
+        margin: 0 10px 0 0;
+        width: 50px;
+        height: 30px;
+        border: 1px solid yellowgreen;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        color: yellowgreen;
+        opacity: .3;
+        background-color: white;
+        transform: scale(0.9);
+    }
+
+    .yes:hover {
+        opacity: 1;
+        background-color: yellowgreen;
+        color: white;
+    }
+
+    .wrong {
+        margin: 0 0 0 10px;
+        width: 50px;
+        height: 30px;
+        border: 1px solid orange;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        color: orange;
+        opacity: .3;
+        transform: scale(0.9);
+    }
+
+    .wrong:hover {
+        opacity: 1;
+        background-color: orange;
+        color: white;
+    }
+
+    .correct {
+        /* margin: 0 5px 0 5px; */
+        display: none;
+    }
+
+    .error {
+        /* margin: 0 5px 0 5px; */
+    }
+
+
+
+    #submit {
+        /* margin: 80px 0 0 0; */
+        width: 120px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: slateblue;
+        border-radius: 5px;
+        color: white;
+    }
+
+    #submit:hover {
+        transform: scale(1.04);
+    }
+</style>
+<script src="jquery.js"></script>
+<script>
+    const words = [
+        ["<font class='error'>按</font><font class='correct'>（安）</font>装", "安装"],
+        ["和<font class='error'>霭</font><font class='correct'>（蔼）</font>", "和蔼"],
+        ["<font class='error'>翱</font><font class='correct'>（遨）</font>游", "遨游"],
+        ["<font class='error'>暗</font><font class='correct'>（谙）</font>熟", "谙熟"],
+        ["<font class='error'>唉</font><font class='correct'>（哀）</font>叹", "哀叹"],
+        ["<font class='error'>奥</font><font class='correct'>（澳）</font>洲", "澳洲"],
+        ["暮<font class='error'>蔼</font><font class='correct'>（霭）</font>", "暮霭"],
+        ["<font class='error'>暖</font><font class='correct'>（暖）</font>昧", "暧昧"],
+        ["<font class='error'>爱</font><font class='correct'>（艾）</font>滋病", "艾滋病"],
+        ["<font class='error'>板</font><font class='correct'>（扳）</font>机", "扳机"],
+        ["<font class='error'>绊</font><font class='correct'>（拌）</font>嘴", "拌嘴"],
+        ["<font class='error'>备</font><font class='correct'>（倍）</font>增", "倍增"],
+        ["针<font class='error'>贬</font><font class='correct'>（砭）</font>", "针砭"],
+        ["<font class='error'>敝</font><font class='correct'>（憋）</font>气", "憋气"],
+        ["<font class='error'>摒</font><font class='correct'>（屏）</font>气", "屏气"],
+        ["船<font class='error'>泊</font><font class='correct'>（舶）</font>", "船舶"],
+        ["<font class='error'>搏</font><font class='correct'>（博）</font>弈", "博弈"],
+        ["<font class='error'>部</font><font class='correct'>（布）</font>置", "布置"],
+        ["<font class='error'>搬</font><font class='correct'>（班）</font>师", "班师"],
+        ["羁<font class='error'>拌</font><font class='correct'>（绊）</font>", "羁绊"],
+        ["<font class='error'>稗</font><font class='correct'>（裨）</font>益", "裨益"],
+        ["<font class='error'>辩</font><font class='correct'>（辨）</font>别", "辨别"],
+        ["<font class='error'>宾</font><font class='correct'>（傧）</font>相", "傧相"],
+        ["<font class='error'>拔</font><font class='correct'>（拨）</font>款", "拨款"],
+        ["<font class='error'>搏</font><font class='correct'>（博）</font>彩", "博彩"],
+        ["脉<font class='error'>博</font><font class='correct'>（搏）</font>", "脉搏"],
+        ["<font class='error'>布</font><font class='correct'>（部）</font>署", "部署"],
+        ["<font class='error'>板</font><font class='correct'>（版）</font>面", "版面"],
+        ["<font class='error'>报</font><font class='correct'>（抱）</font>负", "抱负"],
+        ["<font class='error'>敝</font><font class='correct'>（弊）</font>病", "弊病"],
+        ["<font class='error'>辨</font><font class='correct'>（辩）</font>护", "辩护"],
+        ["<font class='error'>频</font><font class='correct'>（濒）</font>临", "濒临"],
+        ["<font class='error'>泊</font><font class='correct'>（舶）</font>来品", "舶来品"],
+        ["赌<font class='error'>搏</font><font class='correct'>（博）</font>", "赌博"],
+        ["刻<font class='error'>簿</font><font class='correct'>（薄）</font>", "刻薄"],
+        ["号码<font class='error'>薄</font><font class='correct'>（簿）</font>", "号码簿"],
+        ["风<font class='error'>彩</font><font class='correct'>（采）</font>", "风采"],
+        ["<font class='error'>怆</font><font class='correct'>（仓）</font>皇", "仓皇"],
+        ["<font class='error'>侧</font><font class='correct'>（恻）</font>隐", "恻隐"],
+        ["<font class='error'>掺</font><font class='correct'>（搀）</font>扶", "搀扶"],
+        ["貂<font class='error'>婵</font><font class='correct'>（蝉）</font>", "貂蝉"],
+        ["<font class='error'>偿</font><font class='correct'>（尝）</font>试", "尝试"],
+        ["清<font class='error'>彻</font><font class='correct'>（澈）</font>", "清澈"],
+        ["<font class='error'>幢</font><font class='correct'>（憧）</font>憬", "憧憬"],
+        ["<font class='error'>橱</font><font class='correct'>（厨）</font>房", "厨房"],
+        ["<font class='error'>淳</font><font class='correct'>（醇）</font>香", "醇香"],
+        ["<font class='error'>摧</font><font class='correct'>（催）</font>促", "催促"],
+        ["文<font class='error'>彩</font><font class='correct'>（采）</font>", "文采"],
+        ["<font class='error'>仓</font><font class='correct'>（沧）</font>桑", "沧桑"],
+        ["视<font class='error'>查</font><font class='correct'>（察）</font>", "视察"],
+        ["<font class='error'>蝉</font><font class='correct'>（婵）</font>娟", "婵娟"],
+        ["<font class='error'>婵</font><font class='correct'>（蝉）</font>联", "蝉联"],
+        ["<font class='error'>伥</font><font class='correct'>（怅）</font>然", "怅然"],
+        ["松<font class='error'>驰</font><font class='correct'>（弛）</font>", "松弛"],
+        ["范<font class='error'>筹</font><font class='correct'>（畴）</font>", "范畴"],
+        ["怀<font class='error'>惴</font><font class='correct'>（揣）</font>", "怀揣"],
+        ["<font class='error'>缀</font><font class='correct'>（辍）</font>学", "辍学"],
+        ["荟<font class='error'>粹</font><font class='correct'>（萃）</font>", "荟萃"],
+        ["<font class='error'>伧</font><font class='correct'>（仓）</font>促", "仓促"],
+        ["<font class='error'>苍</font><font class='correct'>（沧）</font>海", "沧海"],
+        ["<font class='error'>叉</font><font class='correct'>（岔）</font>路", "岔路"],
+        ["<font class='error'>馋</font><font class='correct'>（谗）</font>言", "谗言"],
+        ["何<font class='error'>偿</font><font class='correct'>（尝）</font>", "何尝"],
+        ["<font class='error'>扯</font><font class='correct'>（掣）</font>肘", "掣肘"],
+        ["整<font class='error'>伤</font><font class='correct'>（饬）</font>", "整饬"],
+        ["<font class='error'>厨</font><font class='correct'>（橱）</font>柜", "橱柜"],
+        ["边<font class='error'>垂</font><font class='correct'>（陲）</font>", "边陲"],
+        ["<font class='error'>纂</font><font class='correct'>（篡）</font>夺", "篡夺"],
+        ["精<font class='error'>萃</font><font class='correct'>（粹）</font>", "精粹"],
+        ["<font class='error'>眈</font><font class='correct'>（耽）</font>误", "耽误"],
+        ["高<font class='error'>挡</font><font class='correct'>（档）</font>", "高档"],
+        ["<font class='error'>抵</font><font class='correct'>（诋）</font>毁", "诋毁"],
+        ["门<font class='error'>弟</font><font class='correct'>（第）</font>", "门第"],
+        ["<font class='error'>掂</font><font class='correct'>（踮）</font>脚", "踮脚"],
+        ["通<font class='error'>谍</font><font class='correct'>（牒）</font>", "通牒"],
+        ["装<font class='error'>钉</font><font class='correct'>（订）</font>", "装订"],
+        ["<font class='error'>带</font><font class='correct'>（戴）</font>帽", "戴帽"],
+        ["河<font class='error'>提</font><font class='correct'>（堤）</font>", "河堤"],
+        ["<font class='error'>啼</font><font class='correct'>（谛）</font>听", "谛听"],
+        ["落<font class='error'>弟</font><font class='correct'>（第）</font>", "落第"],
+        ["<font class='error'>沾</font><font class='correct'>（玷）</font>污", "玷污"],
+        ["影<font class='error'>牒</font><font class='correct'>（碟）</font>", "影碟"],
+        ["<font class='error'>订</font><font class='correct'>（钉）</font>扣子", "钉扣子"],
+        ["挂<font class='error'>档</font><font class='correct'>（挡）</font>", "挂挡"],
+        ["<font class='error'>诋</font><font class='correct'>（砥）</font>砺", "砥砺"],
+        ["真<font class='error'>蒂</font><font class='correct'>（谛）</font>", "真谛"],
+        ["<font class='error'>惦</font><font class='correct'>（掂）</font>量", "掂量"],
+        ["<font class='error'>垫</font><font class='correct'>（奠）</font>基", "奠基"],
+        ["更<font class='error'>叠</font><font class='correct'>（迭）</font>", "更迭"],
+        ["文<font class='error'>椟</font><font class='correct'>（牍）</font>", "文牍"],
+        ["亵<font class='error'>黩</font><font class='correct'>（渎）</font>", "亵渎"],
+        ["目<font class='error'>赌</font><font class='correct'>（睹）</font>", "目睹"],
+        ["<font class='error'>度</font><font class='correct'>（渡）</font>难关", "渡难关"],
+        ["<font class='error'>藍</font><font class='correct'>（蠹）</font>虫", "蠹虫"],
+        ["<font class='error'>渡</font><font class='correct'>（度）</font>日", "度日"],
+        ["桥<font class='error'>礅</font><font class='correct'>（墩）</font>", "桥墩"],
+        ["<font class='error'>厄</font><font class='correct'>（扼）</font>要", "扼要"],
+        ["<font class='error'>恶</font><font class='correct'>（噩）</font>梦", "噩梦"],
+        ["<font class='error'>恶</font><font class='correct'>（厄）</font>运", "厄运"],
+        ["<font class='error'>法</font><font class='correct'>（砝）</font>码", "砝码"],
+        ["<font class='error'>反</font><font class='correct'>（返）</font>工", "返工"],
+        ["<font class='error'>废</font><font class='correct'>（费）</font>力", "费力"],
+        ["<font class='error'>斐</font><font class='correct'>（蜚）</font>声", "蜚声"],
+        ["<font class='error'>份</font><font class='correct'>（分）</font>内", "分内"],
+        ["缘<font class='error'>份</font><font class='correct'>（分）</font>", "缘分"],
+        ["振<font class='error'>辐</font><font class='correct'>（幅）</font>", "振幅"],
+        ["<font class='error'>符</font><font class='correct'>（附）</font>会", "附会"],
+        ["<font class='error'>蕃</font><font class='correct'>（幡）</font>然", "幡然"],
+        ["<font class='error'>返</font><font class='correct'>（反）</font>悔", "反悔"],
+        ["浪<font class='error'>废</font><font class='correct'>（费）</font>", "浪费"],
+        ["<font class='error'>愤</font><font class='correct'>（奋）</font>发", "奋发"],
+        ["<font class='error'>份</font><font class='correct'>（分）</font>量", "分量"],
+        ["<font class='error'>奉</font><font class='correct'>（俸）</font>禄", "俸禄"],
+        ["<font class='error'>腑</font><font class='correct'>（俯）</font>瞰", "俯瞰"],
+        ["<font class='error'>付</font><font class='correct'>（副）</font>刊", "副刊"],
+        ["纷<font class='error'>烦</font><font class='correct'>（繁）</font>", "纷繁"],
+        ["<font class='error'>防</font><font class='correct'>（妨）</font>碍", "妨碍"],
+        ["<font class='error'>绯</font><font class='correct'>（悱）</font>恻", "悱恻"],
+        ["安<font class='error'>份</font><font class='correct'>（分）</font>", "安分"],
+        ["股<font class='error'>分</font><font class='correct'>（份）</font>", "股份"],
+        ["<font class='error'>蝠</font><font class='correct'>（辐）</font>射", "辐射"],
+        ["师<font class='error'>付</font><font class='correct'>（傅）</font>", "师傅"],
+        ["<font class='error'>复</font><font class='correct'>（覆）</font>没", "覆没"],
+        ["气<font class='error'>慨</font><font class='correct'>（概）</font>", "气概"],
+        ["钓<font class='error'>杆</font><font class='correct'>（竿）</font>", "钓竿"],
+        ["桅<font class='error'>干</font><font class='correct'>（杆）</font>", "桅杆"],
+        ["秸<font class='error'>杆</font><font class='correct'>（秆）</font>", "秸秆"],
+        ["景阳<font class='error'>岗</font><font class='correct'>（冈）</font>", "景阳冈"],
+        ["站<font class='error'>冈</font><font class='correct'>（岗）</font>", "站岗"],
+        ["<font class='error'>工</font><font class='correct'>（功）</font>底", "功底"],
+        ["<font class='error'>功</font><font class='correct'>（攻）</font>势", "攻势"],
+        ["<font class='error'>贡</font><font class='correct'>（供）</font>养", "供养"],
+        ["挂<font class='error'>勾</font><font class='correct'>（钩）</font>", "挂钩"],
+        ["<font class='error'>埂</font><font class='correct'>（梗）</font>概", "梗概"],
+        ["<font class='error'>幸</font><font class='correct'>（辜）</font>负", "辜负"],
+        ["<font class='error'>估</font><font class='correct'>（姑）</font>息", "姑息"],
+        ["粗<font class='error'>旷</font><font class='correct'>（犷）</font>", "粗犷"],
+        ["<font class='error'>贯</font><font class='correct'>（惯）</font>例", "惯例"],
+        ["<font class='error'>贯</font><font class='correct'>（灌）</font>输", "灌输"],
+        ["电线<font class='error'>竿</font><font class='correct'>（杆）</font>", "电线杆"],
+        ["井<font class='error'>岗</font><font class='correct'>（冈）</font>山", "井冈山"],
+        ["<font class='error'>冈</font><font class='correct'>（岗）</font>位", "岗位"],
+        ["<font class='error'>供</font><font class='correct'>（贡）</font>献", "贡献"],
+        ["<font class='error'>胳</font><font class='correct'>（隔）</font>膜", "隔膜"],
+        ["<font class='error'>顾</font><font class='correct'>（雇）</font>佣", "雇佣"],
+        ["<font class='error'>刮</font><font class='correct'>（聒）</font>噪", "聒噪"],
+        ["<font class='error'>魁</font><font class='correct'>（瑰）</font>丽", "瑰丽"],
+        ["<font class='error'>函</font><font class='correct'>（涵）</font>养", "涵养"],
+        ["遗<font class='error'>撼</font><font class='correct'>（憾）</font>", "遗憾"],
+        ["惊<font class='error'>赅</font><font class='correct'>（骇）</font>", "惊骇"],
+        ["<font class='error'>和</font><font class='correct'>（合）</font>力", "合力"],
+        ["<font class='error'>宏</font><font class='correct'>（洪）</font>亮", "洪亮"],
+        ["问<font class='error'>侯</font><font class='correct'>（候）</font>", "问候"],
+        ["倏<font class='error'>乎</font><font class='correct'>（忽）</font>", "倏忽"],
+        ["圆<font class='error'>猾</font><font class='correct'>（滑）</font>", "圆滑"],
+        ["膏<font class='error'>育</font><font class='correct'>（肓）</font>", "膏肓"],
+        ["<font class='error'>愰</font><font class='correct'>（幌）</font>子", "幌子"],
+        ["聪<font class='error'>惠</font><font class='correct'>（慧）</font>", "聪慧"],
+        ["<font class='error'>会</font><font class='correct'>（荟）</font>萃", "荟萃"],
+        ["含<font class='error'>浑</font><font class='correct'>（混）</font>", "含混"],
+        ["浩<font class='error'>翰</font><font class='correct'>（瀚）</font>", "浩瀚"],
+        ["震<font class='error'>憾</font><font class='correct'>（撼）</font>", "震撼"],
+        ["<font class='error'>撼</font><font class='correct'>（捍）</font>卫", "捍卫"],
+        ["强<font class='error'>捍</font><font class='correct'>（悍）</font>", "强悍"],
+        ["亲<font class='error'>合</font><font class='correct'>（和）</font>力", "亲和力"],
+        ["<font class='error'>合</font><font class='correct'>（和）</font>谐", "和谐"],
+        ["<font class='error'>弘</font><font class='correct'>（宏）</font>观", "宏观"],
+        ["<font class='error'>洪</font><font class='correct'>（弘）</font>扬", "弘扬"],
+        ["霓<font class='error'>红</font><font class='correct'>（虹）</font>", "霓虹"],
+        ["万户<font class='error'>候</font><font class='correct'>（侯）</font>", "万户侯"],
+        ["<font class='error'>侯</font><font class='correct'>（侯）</font>鸟", "侯鸟"],
+        ["<font class='error'>侯</font><font class='correct'>（候）</font>补", "候补"],
+        ["<font class='error'>狐</font><font class='correct'>（弧）</font>度", "弧度"],
+        ["<font class='error'>糊</font><font class='correct'>（胡）</font>话", "胡话"],
+        ["<font class='error'>焕</font><font class='correct'>（涣）</font>散", "涣散"],
+        ["<font class='error'>涣</font><font class='correct'>（焕）</font>发", "焕发"],
+        ["<font class='error'>慌</font><font class='correct'>（荒）</font>谬", "荒谬"],
+        ["<font class='error'>愰</font><font class='correct'>（惶）</font>惑", "惶惑"],
+        ["春<font class='error'>辉</font><font class='correct'>（晖）</font>", "春晖"],
+        ["<font class='error'>恢</font><font class='correct'>（诙）</font>谐", "诙谐"],
+        ["<font class='error'>会</font><font class='correct'>（汇）</font>报", "汇报"],
+        ["教<font class='error'>悔</font><font class='correct'>（诲）</font>", "教诲"],
+        ["<font class='error'>浑</font><font class='correct'>（诨）</font>号", "诨号"],
+        ["<font class='error'>浑</font><font class='correct'>（混）</font>沌", "混沌"],
+        ["掺<font class='error'>合</font><font class='correct'>（和）</font>", "掺和"],
+        ["<font class='error'>火</font><font class='correct'>（伙）</font>食", "伙食"],
+        ["<font class='error'>肌</font><font class='correct'>（饥）</font>肠", "饥肠"],
+        ["<font class='error'>藉</font><font class='correct'>（籍）</font>贯", "籍贯"],
+        ["<font class='error'>挤</font><font class='correct'>（跻）</font>身", "跻身"],
+        ["<font class='error'>疾</font><font class='correct'>（急）</font>促", "急促"],
+        ["通<font class='error'>辑</font><font class='correct'>（缉）</font>", "通缉"],
+        ["<font class='error'>既</font><font class='correct'>（即）</font>使", "即使"],
+        ["<font class='error'>疾</font><font class='correct'>（棘）</font>手", "棘手"],
+        ["<font class='error'>即</font><font class='correct'>（既）</font>然", "既然"],
+        ["调<font class='error'>济</font><font class='correct'>（剂）</font>", "调剂"],
+        ["马<font class='error'>夹</font><font class='correct'>（甲）</font>", "马甲"],
+        ["<font class='error'>佼</font><font class='correct'>（姣）</font>好", "姣好"],
+        ["<font class='error'>娇</font><font class='correct'>（矫）</font>健", "矫健"],
+        ["麦<font class='error'>桔</font><font class='correct'>（秸）</font>", "麦秸"],
+        ["拘<font class='error'>紧</font><font class='correct'>（谨）</font>", "拘谨"],
+        ["陷<font class='error'>井</font><font class='correct'>（阱）</font>", "陷阱"],
+        ["毕<font class='error'>竞</font><font class='correct'>（竟）</font>", "毕竟"],
+        ["<font class='error'>脽</font><font class='correct'>（雎）</font>鸠", "雎鸠"],
+        ["<font class='error'>巨</font><font class='correct'>（剧）</font>增", "剧增"],
+        ["<font class='error'>决</font><font class='correct'>（抉）</font>择", "抉择"],
+        ["<font class='error'>掘</font><font class='correct'>（崛）</font>起", "崛起"],
+        ["<font class='error'>偕</font><font class='correct'>（揩）</font>油", "揩油"],
+        ["<font class='error'>戡</font><font class='correct'>（勘）</font>查", "勘查"],
+        ["青<font class='error'>棵</font><font class='correct'>（稞）</font>", "青稞"],
+        ["<font class='error'>磕</font><font class='correct'>（瞌）</font>睡", "瞌睡"],
+        ["开<font class='error'>恳</font><font class='correct'>（垦）</font>", "开垦"],
+        ["<font class='error'>馈</font><font class='correct'>（匮）</font>乏", "匮乏"],
+        ["<font class='error'>急</font><font class='correct'>（亟）</font>待", "亟待"],
+        ["学<font class='error'>藉</font><font class='correct'>（籍）</font>", "学籍"],
+        ["<font class='error'>技</font><font class='correct'>（伎）</font>俩", "伎俩"],
+        ["希<font class='error'>翼</font><font class='correct'>（冀）</font>", "希冀"],
+        ["<font class='error'>佳</font><font class='correct'>（嘉）</font>奖", "嘉奖"],
+        ["<font class='error'>嘎</font><font class='correct'>（戛）</font>然", "戛然"],
+        ["船<font class='error'>浆</font><font class='correct'>（桨）</font>", "船桨"],
+        ["<font class='error'>骄</font><font class='correct'>（娇）</font>宠", "娇宠"],
+        ["<font class='error'>徼</font><font class='correct'>（缴）</font>纳", "缴纳"],
+        ["<font class='error'>佼</font><font class='correct'>（皎）</font>洁", "皎洁"],
+        ["挖墙<font class='error'>角</font><font class='correct'>（脚）</font>", "挖墙脚"],
+        ["<font class='error'>结</font><font class='correct'>（节）</font>骨眼", "节骨眼"],
+        ["<font class='error'>界</font><font class='correct'>（届）</font>时", "届时"],
+        ["蕴<font class='error'>籍</font><font class='correct'>（藉）</font>", "蕴藉"],
+        ["<font class='error'>精</font><font class='correct'>（经）</font>典", "经典"],
+        ["<font class='error'>精</font><font class='correct'>（经）</font>络", "经络"],
+        ["<font class='error'>竟</font><font class='correct'>（竞）</font>技", "竞技"],
+        ["<font class='error'>竞</font><font class='correct'>（竟）</font>然", "竟然"],
+        ["<font class='error'>炯</font><font class='correct'>（迥）</font>异", "迥异"],
+        ["针<font class='error'>炙</font><font class='correct'>（灸）</font>", "针灸"],
+        ["规<font class='error'>距</font><font class='correct'>（矩）</font>", "规矩"],
+        ["家<font class='error'>俱</font><font class='correct'>（具）</font>", "家具"],
+        ["<font class='error'>具</font><font class='correct'>（俱）</font>全", "俱全"],
+        ["盘<font class='error'>距</font><font class='correct'>（踞）</font>", "盘踞"],
+        ["<font class='error'>决</font><font class='correct'>（诀）</font>窍", "诀窍"],
+        ["<font class='error'>央</font><font class='correct'>（诀）</font>别", "诀别"],
+        ["<font class='error'>峻</font><font class='correct'>（竣）</font>工", "竣工"],
+        ["疏<font class='error'>竣</font><font class='correct'>（浚）</font>", "疏浚"],
+        ["<font class='error'>揩</font><font class='correct'>（楷）</font>模", "楷模"],
+        ["<font class='error'>勘</font><font class='correct'>（戡）</font>乱", "戡乱"],
+        ["<font class='error'>嗑</font><font class='correct'>（磕）</font>头", "磕头"],
+        ["<font class='error'>格</font><font class='correct'>（恪）</font>守", "恪守"],
+        ["<font class='error'>挎</font><font class='correct'>（垮）</font>台", "垮台"],
+        ["昏<font class='error'>馈</font><font class='correct'>（聩）</font>", "昏聩"],
+        ["慷<font class='error'>概</font><font class='correct'>（慨）</font>", "慷慨"],
+        ["<font class='error'>搞</font><font class='correct'>（犒）</font>劳", "犒劳"],
+        ["<font class='error'>嗑</font><font class='correct'>（磕）</font>碰", "磕碰"],
+        ["<font class='error'>克</font><font class='correct'>（刻）</font>苦", "刻苦"],
+        ["眼<font class='error'>框</font><font class='correct'>（眶）</font>", "眼眶"],
+        ["寥<font class='error'>阔</font><font class='correct'>（廓）</font>", "寥廓"],
+        ["打<font class='error'>腊</font><font class='correct'>（蜡）</font>", "打蜡"],
+        ["<font class='error'>篮</font><font class='correct'>（蓝）</font>本", "蓝本"],
+        ["<font class='error'>蓝</font><font class='correct'>（篮）</font>球", "篮球"],
+        ["护<font class='error'>拦</font><font class='correct'>（栏）</font>", "护栏"],
+        ["斑<font class='error'>澜</font><font class='correct'>（斓）</font>", "斑斓"],
+        ["<font class='error'>览</font><font class='correct'>（缆）</font>车", "缆车"],
+        ["<font class='error'>嬴</font><font class='correct'>（羸）</font>弱", "羸弱"],
+        ["<font class='error'>类</font><font class='correct'>（雷）</font>同", "雷同"],
+        ["呆<font class='error'>楞</font><font class='correct'>（愣）</font>", "呆愣"],
+        ["<font class='error'>历</font><font class='correct'>（厉）</font>害", "厉害"],
+        ["<font class='error'>俐</font><font class='correct'>（利）</font>落", "利落"],
+        ["鹤<font class='error'>戾</font><font class='correct'>（唳）</font>", "鹤唳"],
+        ["蝉<font class='error'>连</font><font class='correct'>（联）</font>", "蝉联"],
+        ["黄<font class='error'>莲</font><font class='correct'>（连）</font>", "黄连"],
+        ["千<font class='error'>炼</font><font class='correct'>（练）</font>", "千练"],
+        ["熟<font class='error'>炼</font><font class='correct'>（练）</font>", "熟练"],
+        ["修<font class='error'>练</font><font class='correct'>（炼）</font>", "修炼"],
+        ["锤<font class='error'>练</font><font class='correct'>（炼）</font>", "锤炼"],
+        ["提<font class='error'>练</font><font class='correct'>（炼）</font>", "提炼"],
+        ["高<font class='error'>梁</font><font class='correct'>（粱）</font>", "高粱"],
+        ["桥<font class='error'>粱</font><font class='correct'>（梁）</font>", "桥梁"],
+        ["老<font class='error'>俩</font><font class='correct'>（两）</font>口", "老两口"],
+        ["<font class='error'>了</font><font class='correct'>（潦）</font>草", "潦草"],
+        ["寂<font class='error'>廖</font><font class='correct'>（寥）</font>", "寂寥"],
+        ["<font class='error'>廖</font><font class='correct'>（寥）</font>廓", "寥廓"],
+        ["<font class='error'>僚</font><font class='correct'>（镣）</font>铐", "镣铐"],
+        ["<font class='error'>了</font><font class='correct'>（瞭）</font>望", "瞭望"],
+        ["<font class='error'>鳞</font><font class='correct'>（遴）</font>选", "遴选"],
+        ["<font class='error'>铃</font><font class='correct'>（玲）</font>珑", "玲珑"],
+        ["<font class='error'>玲</font><font class='correct'>（伶）</font>俐", "伶俐"],
+        ["<font class='error'>棱</font><font class='correct'>（菱）</font>形", "菱形"],
+        ["孤<font class='error'>伶伶</font><font class='correct'>（零零）</font>", "孤零零"],
+        ["<font class='error'>流</font><font class='correct'>（留）</font>恋", "留恋"],
+        ["<font class='error'>留</font><font class='correct'>（刘）</font>海儿", "刘海儿"],
+        ["<font class='error'>流</font><font class='correct'>（浏）</font>览", "浏览"],
+        ["葱<font class='error'>笼</font><font class='correct'>（茏）</font>", "葱茏"],
+        ["拉<font class='error'>笼</font><font class='correct'>（拢）</font>", "拉拢"],
+        ["<font class='error'>拢</font><font class='correct'>（笼）</font>络", "笼络"],
+        ["<font class='error'>陇</font><font class='correct'>（垄）</font>断", "垄断"],
+        ["捅<font class='error'>漏</font><font class='correct'>（娄）</font>子", "捅娄子"],
+        ["遗<font class='error'>露</font><font class='correct'>（漏）</font>", "遗漏"],
+        ["杀<font class='error'>戳</font><font class='correct'>（戮）</font>", "杀戮"],
+        ["频<font class='error'>律</font><font class='correct'>（率）</font>", "频率"],
+        ["旋<font class='error'>率</font><font class='correct'>（律）</font>", "旋律"],
+        ["痉<font class='error'>孪</font><font class='correct'>（挛）</font>", "痉挛"],
+        ["<font class='error'>挛</font><font class='correct'>（孪）</font>生", "孪生"],
+        ["<font class='error'>伦</font><font class='correct'>（沦）</font>落", "沦落"],
+        ["<font class='error'>罗</font><font class='correct'>（啰）</font>唆", "啰唆"],
+        ["怠<font class='error'>漫</font><font class='correct'>（慢）</font>", "怠慢"],
+        ["前<font class='error'>矛</font><font class='correct'>（茅）</font>", "前茅"],
+        ["<font class='error'>谜</font><font class='correct'>（迷）</font>宫", "迷宫"],
+        ["<font class='error'>靡</font><font class='correct'>（糜）</font>烂", "糜烂"],
+        ["隐<font class='error'>密</font><font class='correct'>（秘）</font>", "隐秘"],
+        ["扫<font class='error'>瞄</font><font class='correct'>（描）</font>", "扫描"],
+        ["<font class='error'>抿</font><font class='correct'>（泯）</font>灭", "泯灭"],
+        ["观<font class='error'>摹</font><font class='correct'>（摩）</font>", "观摩"],
+        ["<font class='error'>母</font><font class='correct'>（拇）</font>指", "拇指"],
+        ["<font class='error'>慢</font><font class='correct'>（漫）</font>谈", "漫谈"],
+        ["<font class='error'>肓</font><font class='correct'>（盲）</font>目", "盲目"],
+        ["<font class='error'>冒</font><font class='correct'>（贸）</font>然", "贸然"],
+        ["<font class='error'>懵</font><font class='correct'>（蒙）</font>人", "蒙人"],
+        ["捉<font class='error'>谜</font><font class='correct'>（迷）</font>藏", "捉迷藏"],
+        ["消<font class='error'>弥</font><font class='correct'>（弭）</font>", "消弭"],
+        ["披<font class='error'>糜</font><font class='correct'>（靡）</font>", "披靡"],
+        ["萎<font class='error'>糜</font><font class='correct'>（靡）</font>", "萎靡"],
+        ["<font class='error'>湎</font><font class='correct'>（缅）</font>怀", "缅怀"],
+        ["沉<font class='error'>缅</font><font class='correct'>（湎）</font>", "沉湎"],
+        ["浩<font class='error'>缈</font><font class='correct'>（渺）</font>", "浩渺"],
+        ["轻<font class='error'>篾</font><font class='correct'>（蔑）</font>", "轻蔑"],
+        ["<font class='error'>名</font><font class='correct'>（明）</font>信片", "明信片"],
+        ["临<font class='error'>摩</font><font class='correct'>（摹）</font>", "临摹"],
+        ["寂<font class='error'>漠</font><font class='correct'>（寞）</font>", "寂寞"],
+        ["粉<font class='error'>沫</font><font class='correct'>（末）</font>", "粉末"],
+        ["<font class='error'>幕</font><font class='correct'>（暮）</font>色", "暮色"],
+        ["招<font class='error'>幕</font><font class='correct'>（募）</font>", "招募"],
+        ["<font class='error'>赫</font><font class='correct'>（赧）</font>颜", "赧颜"],
+        ["<font class='error'>扭</font><font class='correct'>（忸）</font>怩", "忸怩"],
+        ["<font class='error'>钮</font><font class='correct'>（纽）</font>带", "纽带"],
+        ["<font class='error'>呕</font><font class='correct'>（讴）</font>歌", "讴歌"],
+        ["<font class='error'>呕</font><font class='correct'>（怄）</font>气", "怄气"],
+        ["<font class='error'>欧</font><font class='correct'>（殴）</font>打", "殴打"],
+        ["<font class='error'>沤</font><font class='correct'>（呕）</font>吐", "呕吐"],
+        ["<font class='error'>怄</font><font class='correct'>（沤）</font>肥", "沤肥"],
+        ["<font class='error'>趴</font><font class='correct'>（扒）</font>手", "扒手"],
+        ["涅<font class='error'>磐</font><font class='correct'>（槃）</font>", "涅槃"],
+        ["<font class='error'>疱</font><font class='correct'>（庖）</font>厨", "庖厨"],
+        ["<font class='error'>陪</font><font class='correct'>（赔）</font>偿", "赔偿"],
+        ["<font class='error'>砰</font><font class='correct'>（抨）</font>击", "抨击"],
+        ["<font class='error'>篷</font><font class='correct'>（蓬）</font>松", "蓬松"],
+        ["敞<font class='error'>蓬</font><font class='correct'>（篷）</font>车", "敞篷车"],
+        ["<font class='error'>批</font><font class='correct'>（披）</font>露", "披露"],
+        ["偏<font class='error'>辟</font><font class='correct'>（僻）</font>", "偏僻"],
+        ["<font class='error'>骠</font><font class='correct'>（剽）</font>悍", "剽悍"],
+        ["<font class='error'>判</font><font class='correct'>（叛）</font>变", "叛变"],
+        ["<font class='error'>配</font><font class='correct'>（佩）</font>带", "佩带"],
+        ["帐<font class='error'>蓬</font><font class='correct'>（篷）</font>", "帐篷"],
+        ["<font class='error'>批</font><font class='correct'>（披）</font>览", "披览"],
+        ["<font class='error'>凭</font><font class='correct'>（平）</font>添", "平添"],
+        ["分<font class='error'>岐</font><font class='correct'>（歧）</font>", "分歧"],
+        ["<font class='error'>岐</font><font class='correct'>（歧）</font>义", "歧义"],
+        ["默<font class='error'>挈</font><font class='correct'>（契）</font>", "默契"],
+        ["<font class='error'>气</font><font class='correct'>（汽）</font>水", "汽水"],
+        ["接<font class='error'>恰</font><font class='correct'>（洽）</font>", "接洽"],
+        ["<font class='error'>欠</font><font class='correct'>（歉）</font>疚", "歉疚"],
+        ["<font class='error'>倾</font><font class='correct'>（顷）</font>刻：", "顷刻"],
+        ["<font class='error'>亲</font><font class='correct'>（青）</font>睐", "青睐"],
+        ["<font class='error'>趋</font><font class='correct'>（驱）</font>使", "驱使"],
+        ["<font class='error'>全</font><font class='correct'>（痊）</font>愈", "痊愈"],
+        ["兑换<font class='error'>卷</font><font class='correct'>（券）</font>", "兑换券"],
+        ["商<font class='error'>确</font><font class='correct'>（榷）</font>", "商榷"],
+        ["<font class='error'>挠</font><font class='correct'>（饶）</font>恕", "饶恕"],
+        ["<font class='error'>葺</font><font class='correct'>（茸）</font>毛", "茸毛"],
+        ["杂<font class='error'>揉</font><font class='correct'>（糅）</font>", "杂糅"],
+        ["困<font class='error'>挠</font><font class='correct'>（扰）</font>", "困扰"],
+        ["<font class='error'>溶</font><font class='correct'>（融）</font>洽", "融洽"],
+        ["<font class='error'>柄</font><font class='correct'>（枘）</font>凿", "枘凿"],
+        ["修<font class='error'>茸</font><font class='correct'>（葺）</font>", "修葺"],
+        ["水蒸<font class='error'>汽</font><font class='correct'>（气）</font>", "水蒸气"],
+        ["诀<font class='error'>窃</font><font class='correct'>（窍）</font>", "诀窍"],
+        ["<font class='error'>虬</font><font class='correct'>（遒）</font>劲", "遒劲"],
+        ["<font class='error'>倦</font><font class='correct'>（蜷）</font>缩", "蜷缩"],
+        ["城<font class='error'>阕</font><font class='correct'>（阙）</font>", "城阙"],
+        ["坚<font class='error'>仞</font><font class='correct'>（韧）</font>", "坚韧"],
+        ["<font class='error'>揉</font><font class='correct'>（蹂）</font>躏", "蹂躏"],
+        ["<font class='error'>诺</font><font class='correct'>（偌）</font>大", "偌大"],
+        ["<font class='error'>撤</font><font class='correct'>（撒）</font>手", "撒手"],
+        ["<font class='error'>剎</font><font class='correct'>（煞）</font>白", "煞白"],
+        ["<font class='error'>扇</font><font class='correct'>（煽）</font>情", "煽情"],
+        ["<font class='error'>摄</font><font class='correct'>（慑）</font>服", "慑服"],
+        ["<font class='error'>手</font><font class='correct'>（首）</font>饰", "首饰"],
+        ["<font class='error'>搔</font><font class='correct'>（骚）</font>扰", "骚扰"],
+        ["蹒<font class='error'>姗</font><font class='correct'>（跚）</font>", "蹒跚"],
+        ["<font class='error'>响</font><font class='correct'>（晌）</font>午", "晌午"],
+        ["<font class='error'>郝</font><font class='correct'>（赦）</font>免", "赦免"],
+        ["<font class='error'>守</font><font class='correct'>（狩）</font>猎", "狩猎"],
+        ["害<font class='error'>躁</font><font class='correct'>（臊）</font>", "害臊"],
+        ["<font class='error'>瞻</font><font class='correct'>（赡）</font>养", "赡养"],
+        ["花<font class='error'>梢</font><font class='correct'>（哨）</font>", "花哨"],
+        ["<font class='error'>申</font><font class='correct'>（伸）</font>张", "伸张"],
+        ["<font class='error'>暑</font><font class='correct'>（署）</font>名", "署名"],
+        ["部<font class='error'>暑</font><font class='correct'>（署）</font>", "部署"],
+        ["闪<font class='error'>铄</font><font class='correct'>（烁）</font>", "闪烁"],
+        ["<font class='error'>耸</font><font class='correct'>（悚）</font>然", "悚然"],
+        ["<font class='error'>燧</font><font class='correct'>（隧）</font>道", "隧道"],
+        ["摩<font class='error'>娑</font><font class='correct'>（挲）</font>", "摩挲"],
+        ["卫<font class='error'>戌</font><font class='correct'>（戍）</font>", "卫戍"],
+        ["<font class='error'>撕</font><font class='correct'>（厮）</font>杀", "厮杀"],
+        ["朗<font class='error'>领</font><font class='correct'>（诵）</font>", "朗诵"],
+        ["教<font class='error'>嗦</font><font class='correct'>（唆）</font>", "教唆"],
+        ["<font class='error'>锁</font><font class='correct'>（琐）</font>屑", "琐屑"],
+        ["<font class='error'>嗽</font><font class='correct'>（漱）</font>口", "漱口"],
+        ["<font class='error'>纵</font><font class='correct'>（怂）</font>恿", "怂恿"],
+        ["鬼<font class='error'>崇</font><font class='correct'>（祟）</font>", "鬼祟"],
+        ["繁<font class='error'>锁</font><font class='correct'>（琐）</font>", "繁琐"],
+        ["枷<font class='error'>索</font><font class='correct'>（锁）</font>", "枷锁"],
+        ["拖<font class='error'>踏</font><font class='correct'>（沓）</font>", "拖沓"],
+        ["<font class='error'>摊</font><font class='correct'>（瘫）</font>软", "瘫软"],
+        ["<font class='error'>螳</font><font class='correct'>（蹚）</font>水", "蹚水"],
+        ["<font class='error'>誉</font><font class='correct'>（誊）</font>写", "誊写"],
+        ["<font class='error'>甜</font><font class='correct'>（恬）</font>静", "恬静"],
+        ["请<font class='error'>贴</font><font class='correct'>（帖）</font>", "请帖"],
+        ["<font class='error'>曈</font><font class='correct'>（瞳）</font>孔", "瞳孔"],
+        ["鞭<font class='error'>鞑</font><font class='correct'>（挞）</font>", "鞭挞"],
+        ["偏<font class='error'>坦</font><font class='correct'>（袒）</font>", "偏袒"],
+        ["<font class='error'>塘</font><font class='correct'>（搪）</font>塞", "搪塞"],
+        ["<font class='error'>腾</font><font class='correct'>（螣）</font>蛇", "螣蛇"],
+        ["体<font class='error'>帖</font><font class='correct'>（贴）</font>", "体贴"],
+        ["朝<font class='error'>庭</font><font class='correct'>（廷）</font>", "朝廷"],
+        ["<font class='error'>脱</font><font class='correct'>（蜕）</font>化", "蜕化"],
+        ["糟<font class='error'>塌</font><font class='correct'>（蹋）</font>", "糟蹋"],
+        ["煤<font class='error'>碳</font><font class='correct'>（炭）</font>", "煤炭"],
+        ["熏<font class='error'>淘</font><font class='correct'>（陶）</font>", "熏陶"],
+        ["<font class='error'>题</font><font class='correct'>（提）</font>纲", "提纲"],
+        ["妥<font class='error'>贴</font><font class='correct'>（帖）</font>", "妥帖"],
+        ["天<font class='error'>廷</font><font class='correct'>（庭）</font>", "天庭"],
+        ["<font class='error'>托</font><font class='correct'>（拖）</font>鞋", "拖鞋"],
+        ["<font class='error'>婉</font><font class='correct'>（惋）</font>惜", "惋惜"],
+        ["<font class='error'>忘</font><font class='correct'>（妄）</font>想", "妄想"],
+        ["<font class='error'>蔚</font><font class='correct'>（慰）</font>藉", "慰藉"],
+        ["委<font class='error'>惋</font><font class='correct'>（婉）</font>", "委婉"],
+        ["<font class='error'>惟</font><font class='correct'>（帷）</font>幄", "帷幄"],
+        ["旋<font class='error'>窝</font><font class='correct'>（涡）</font>", "旋涡"],
+        ["<font class='error'>安</font><font class='correct'>（枉）</font>费", "枉费"],
+        ["<font class='error'>帏</font><font class='correct'>（帷）</font>幕", "帷幕"],
+        ["<font class='error'>污</font><font class='correct'>（诬）</font>告", "诬告"],
+        ["白<font class='error'>晰</font><font class='correct'>（皙）</font>", "白皙"],
+        ["<font class='error'>息</font><font class='correct'>（熄）</font>灭", "熄灭"],
+        ["<font class='error'>嘻</font><font class='correct'>（嬉）</font>戏", "嬉戏"],
+        ["沿<font class='error'>习</font><font class='correct'>（袭）</font>", "沿袭"],
+        ["迁<font class='error'>徒</font><font class='correct'>（徙）</font>", "迁徙"],
+        ["<font class='error'>暇</font><font class='correct'>（遐）</font>思", "遐思"],
+        ["<font class='error'>暇</font><font class='correct'>（瑕）</font>疵", "瑕疵"],
+        ["船<font class='error'>弦</font><font class='correct'>（舷）</font>", "船舷"],
+        ["诬<font class='error'>谄</font><font class='correct'>（陷）</font>", "诬陷"],
+        ["照<font class='error'>像</font><font class='correct'>（相）</font>", "照相"],
+        ["安<font class='error'>祥</font><font class='correct'>（详）</font>", "安详"],
+        ["慈<font class='error'>详</font><font class='correct'>（祥）</font>", "慈祥"],
+        ["<font class='error'>详</font><font class='correct'>（祥）</font>和", "祥和"],
+        ["意<font class='error'>像</font><font class='correct'>（象）</font>", "意象"],
+        ["通<font class='error'>霄</font><font class='correct'>（宵）</font>", "通宵"],
+        ["<font class='error'>消</font><font class='correct'>（道）</font>遥", "道遥"],
+        ["报<font class='error'>消</font><font class='correct'>（销）</font>", "报销"],
+        ["<font class='error'>消</font><font class='correct'>（销）</font>毁", "销毁"],
+        ["云<font class='error'>宵</font><font class='correct'>（霄）</font>", "云霄"],
+        ["<font class='error'>谐</font><font class='correct'>（协）</font>奏曲", "协奏曲"],
+        ["<font class='error'>谐</font><font class='correct'>（协）</font>作", "协作"],
+        ["<font class='error'>协</font><font class='correct'>（胁）</font>迫", "胁迫"],
+        ["发<font class='error'>泻</font><font class='correct'>（泄）</font>", "发泄"],
+        ["倾<font class='error'>泄</font><font class='correct'>（泻）</font>", "倾泻"],
+        ["<font class='error'>腥</font><font class='correct'>（猩）</font>红", "猩红"],
+        ["<font class='error'>形</font><font class='correct'>（行）</font>踪", "行踪"],
+        ["外<font class='error'>型</font><font class='correct'>（形）</font>", "外形"],
+        ["流线<font class='error'>形</font><font class='correct'>（型）</font>", "流线型"],
+        ["<font class='error'>休</font><font class='correct'>（修）</font>葺", "修葺"],
+        ["手<font class='error'>序</font><font class='correct'>（续）</font>", "手续"],
+        ["<font class='error'>渲</font><font class='correct'>（宣）</font>泄", "宣泄"],
+        ["<font class='error'>暄</font><font class='correct'>（喧）</font>闹", "喧闹"],
+        ["寒<font class='error'>喧</font><font class='correct'>（暄）</font>", "寒暄"],
+        ["<font class='error'>眩</font><font class='correct'>（炫）</font>目", "炫目"],
+        ["<font class='error'>眩</font><font class='correct'>（炫）</font>耀", "炫耀"],
+        ["<font class='error'>宣</font><font class='correct'>（渲）</font>染", "渲染"],
+        ["醉<font class='error'>熏熏</font><font class='correct'>（醺醺）</font>", "醉醺醺"],
+        ["<font class='error'>寻</font><font class='correct'>（询）</font>问", "询问"],
+        ["通<font class='error'>迅</font><font class='correct'>（讯）</font>", "通讯"],
+        ["潮<font class='error'>讯</font><font class='correct'>（汛）</font>", "潮汛"],
+        ["<font class='error'>循</font><font class='correct'>（徇）</font>私", "徇私"],
+        ["<font class='error'>徇</font><font class='correct'>（殉）</font>难", "殉难"],
+        ["<font class='error'>延</font><font class='correct'>（沿）</font>袭", "沿袭"],
+        ["祸<font class='error'>秧</font><font class='correct'>（殃）</font>", "祸殃"],
+        ["<font class='error'>殆</font><font class='correct'>（贻）</font>误", "贻误"],
+        ["游<font class='error'>戈</font><font class='correct'>（弋）</font>", "游弋"],
+        ["<font class='error'>肆</font><font class='correct'>（肄）</font>业", "肄业"],
+        ["梦<font class='error'>靥</font><font class='correct'>（魇）</font>", "梦魇"],
+        ["<font class='error'>膺</font><font class='correct'>（赝）</font>品", "赝品"],
+        ["<font class='error'>摇</font><font class='correct'>（遥）</font>控", "遥控"],
+        ["笑<font class='error'>魇</font><font class='correct'>（靥）</font>", "笑靥"],
+        ["疮<font class='error'>夷</font><font class='correct'>（痍）</font>", "疮痍"],
+        ["<font class='error'>怡</font><font class='correct'>（颐）</font>养", "颐养"],
+        ["<font class='error'>一</font><font class='correct'>（易）</font>拉罐", "易拉罐"],
+        ["演<font class='error'>译</font><font class='correct'>（绎）</font>", "演绎"],
+        ["<font class='error'>莹</font><font class='correct'>（荧）</font>光", "荧光"],
+        ["<font class='error'>萤</font><font class='correct'>（荧）</font>屏", "荧屏"],
+        ["<font class='error'>嬴</font><font class='correct'>（赢）</font>得", "赢得"],
+        ["<font class='error'>涌</font><font class='correct'>（踊）</font>跃", "踊跃"],
+        ["良<font class='error'>秀</font><font class='correct'>（莠）</font>", "良莠"],
+        ["<font class='error'>渝</font><font class='correct'>（逾）</font>期", "逾期"],
+        ["<font class='error'>原</font><font class='correct'>（元）</font>气", "元气"],
+        ["<font class='error'>缘</font><font class='correct'>（原）</font>委", "原委"],
+        ["<font class='error'>殒</font><font class='correct'>（陨）</font>落", "陨落"],
+        ["蜂<font class='error'>涌</font><font class='correct'>（拥）</font>", "蜂拥"],
+        ["<font class='error'>忧</font><font class='correct'>（幽）</font>怨", "幽怨"],
+        ["<font class='error'>愚</font><font class='correct'>（迂）</font>腐", "迂腐"],
+        ["赋<font class='error'>与</font><font class='correct'>（予）</font>", "赋予"],
+        ["<font class='error'>原</font><font class='correct'>（元）</font>凶", "元凶"],
+        ["方<font class='error'>园</font><font class='correct'>（圆）</font>", "方圆"],
+        ["<font class='error'>陨</font><font class='correct'>（殒）</font>命", "殒命"],
+        ["<font class='error'>涌</font><font class='correct'>（甬）</font>道", "甬道"],
+        ["<font class='error'>尤</font><font class='correct'>（犹）</font>如", "犹如"],
+        ["揶<font class='error'>愉</font><font class='correct'>（揄）</font>", "揶揄"],
+        ["参<font class='error'>予</font><font class='correct'>（与）</font>", "参与"],
+        ["幅<font class='error'>圆</font><font class='correct'>（员）</font>", "幅员"],
+        ["纷<font class='error'>芸</font><font class='correct'>（纭）</font>", "纷纭"],
+        ["<font class='error'>孕</font><font class='correct'>（蕴）</font>藏", "蕴藏"],
+        ["贪<font class='error'>脏</font><font class='correct'>（赃）</font>", "贪赃"],
+        ["肮<font class='error'>赃</font><font class='correct'>（脏）</font>", "肮脏"],
+        ["聒<font class='error'>燥</font><font class='correct'>（噪）</font>", "聒噪"],
+        ["枯<font class='error'>躁</font><font class='correct'>（燥）</font>", "枯燥"],
+        ["暴<font class='error'>燥</font><font class='correct'>（躁）</font>", "暴躁"],
+        ["<font class='error'>燥</font><font class='correct'>（躁）</font>动", "躁动"],
+        ["<font class='error'>扎</font><font class='correct'>（札）</font>记", "札记"],
+        ["<font class='error'>贬</font><font class='correct'>（眨）</font>眼", "眨眼"],
+        ["敲<font class='error'>榨</font><font class='correct'>（诈）</font>", "敲诈"],
+        ["压<font class='error'>诈</font><font class='correct'>（榨）</font>", "压榨"],
+        ["膨<font class='error'>涨</font><font class='correct'>（胀）</font>", "膨胀"],
+        ["<font class='error'>涨</font><font class='correct'>（胀）</font>痛", "胀痛"],
+        ["<font class='error'>帐</font><font class='correct'>（账）</font>目", "账目"],
+        ["<font class='error'>蜇</font><font class='correct'>（蛰）</font>伏", "蛰伏"],
+        ["装<font class='error'>祯</font><font class='correct'>（帧）</font>", "装帧"],
+        ["<font class='error'>慎</font><font class='correct'>（缜）</font>密", "缜密"],
+        ["雷<font class='error'>震</font><font class='correct'>（阵）</font>雨", "雷阵雨"],
+        ["<font class='error'>震</font><font class='correct'>（振）</font>奋", "振奋"],
+        ["坐<font class='error'>阵</font><font class='correct'>（镇）</font>", "坐镇"],
+        ["<font class='error'>振</font><font class='correct'>（震）</font>撼", "震撼"],
+        ["福<font class='error'>址</font><font class='correct'>（祉）</font>", "福祉"],
+        ["对<font class='error'>恃</font><font class='correct'>（峙）</font>", "对峙"],
+        ["极<font class='error'>至</font><font class='correct'>（致）</font>", "极致"],
+        ["导<font class='error'>至</font><font class='correct'>（致）</font>", "导致"],
+        ["<font class='error'>至</font><font class='correct'>（致）</font>使", "致使"],
+        ["<font class='error'>衷</font><font class='correct'>（钟）</font>爱", "钟爱"],
+        ["神<font class='error'>洲</font><font class='correct'>（州）</font>", "神州"],
+        ["九<font class='error'>洲</font><font class='correct'>（州）</font>", "九州"],
+        ["绿<font class='error'>州</font><font class='correct'>（洲）</font>", "绿洲"],
+        ["文<font class='error'>诌</font><font class='correct'>（绉绉）</font>", "文绉绉"],
+        ["<font class='error'>绉</font><font class='correct'>（皱）</font>纹", "皱纹"],
+        ["锱<font class='error'>珠</font><font class='correct'>（铢）</font>", "锱铢"],
+        ["<font class='error'>嘱</font><font class='correct'>（瞩）</font>目", "瞩目"],
+        ["一<font class='error'>柱</font><font class='correct'>（炷）</font>香", "一炷香"],
+        ["化<font class='error'>装</font><font class='correct'>（妆）</font>品", "化妆品"],
+        ["<font class='error'>姿</font><font class='correct'>（恣）</font>意", "恣意"],
+        ["<font class='error'>凑</font><font class='correct'>（奏）</font>效", "奏效"],
+        ["<font class='error'>咀</font><font class='correct'>（诅）</font>咒", "诅咒"],
+        ["编<font class='error'>篡</font><font class='correct'>（纂）</font>", "编纂"],
+        ["<font class='error'>尊</font><font class='correct'>（遵）</font>从", "遵从"],
+        ["操<font class='error'>做</font><font class='correct'>（作）</font>", "操作"],
+        ["<font class='error'>做</font><font class='correct'>（作）</font>梗", "作梗"],
+        ["<font class='error'>做</font><font class='correct'>（作）</font>揖", "作揖"],
+        ["<font class='error'>座</font><font class='correct'>（坐）</font>标", "坐标"],
+        ["<font class='error'>座</font><font class='correct'>（坐）</font>落", "坐落"],
+        ["邻<font class='error'>坐</font><font class='correct'>（座）</font>", "邻座"],
+        ["<font class='error'>坐</font><font class='correct'>（座）</font>右铭", "座右铭"],
+        ["<font class='error'>作</font><font class='correct'>（做）</font>工", "做工"],
+        ["<font class='error'>哀</font><font class='correct'>（唉）</font>声叹气", "唉声叹气"],
+        ["不<font class='error'>黯</font><font class='correct'>（谙）</font>世事", "不谙世事"],
+        ["<font class='error'>暗</font><font class='correct'>（黯）</font>然销魂", "黯然销魂"],
+        ["佶屈<font class='error'>骛</font><font class='correct'>（聱）</font>牙", "佶屈聱牙"],
+        ["和<font class='error'>霭</font><font class='correct'>（蔼）</font>可亲", "和蔼可亲"],
+        ["<font class='error'>安</font><font class='correct'>（按）</font>捺不住", "按捺不住"],
+        ["独占<font class='error'>鳖</font><font class='correct'>（鳌）</font>头", "独占鳌头"],
+        ["桀<font class='error'>傲</font><font class='correct'>（骜）</font>不驯", "桀骜不驯"],
+        ["飞扬<font class='error'>拔</font><font class='correct'>（跋）</font>扈", "飞扬跋扈"],
+        ["纵横<font class='error'>俾</font><font class='correct'>（捭）</font>阖", "纵横捭阖"],
+        ["<font class='error'>神</font><font class='correct'>（稗）</font>官野史", "稗官野史"],
+        ["<font class='error'>搬</font><font class='correct'>（班）</font>师回朝", "班师回朝"],
+        ["如丸走<font class='error'>板</font><font class='correct'>（坂）</font>", "如丸走坂"],
+        ["千里<font class='error'>拔</font><font class='correct'>（跋）</font>涉", "千里跋涉"],
+        ["甘<font class='error'>败</font><font class='correct'>（拜）</font>下风", "甘拜下风"],
+        ["<font class='error'>搬</font><font class='correct'>（班）</font>门弄斧", "班门弄斧"],
+        ["可见一<font class='error'>般</font><font class='correct'>（斑）</font>", "可见一斑"],
+        ["安<font class='error'>帮</font><font class='correct'>（邦）</font>定国", "安邦定国"],
+    ];
+</script>
+<script>
+
+    var score = 0;
+    var scoreArr = [];
+
+    $("#submit").html("开始");
+
+    $("#submit").on("click", function () {
+        if ($("#submit").html() == "开始" || $("#submit").html() == "再来一次") {
+            scoreArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            score = 0;
+            $("#judge1").css("pointer-events", "auto");
+            $("#judge2").css("pointer-events", "auto");
+            $("#judge3").css("pointer-events", "auto");
+            $("#judge4").css("pointer-events", "auto");
+            $("#judge5").css("pointer-events", "auto");
+            $(".item1").css("background-color", "aliceblue");
+            $(".item1").css("border", "1px solid lightskyblue");
+            $(".row").html("");
+            $("#fraction").css("display", "none");
+            $("#submit").css("margin", "50px 0 0 0")
+            $("#submit").html("提交");
+            $(".row").css("display", "flex");
+            var randNum1;
+            var randNum2;
+            let repeatArr = [];
+            for (let i = 0; i < 10; i++) {
+                do {
+                    randNum1 = Math.floor(Math.random() * words.length);
+                    isRand = repeatArr.indexOf(randNum1);
+                    if (isRand < 0) {
+                        repeatArr.push(randNum1);
+                    }
+                } while (isRand >= 0);
+                randNum2 = Math.floor(Math.random() * 2);
+                if (i < 2) {
+                    $("#line1").append('<div class="item1" id="subject' + i + '">' + words[randNum1][randNum2] + '</div>');
+                    $("#judge1").append('<div class="item2"><div class="yes" index1="' + i + '">正确</div><div class="wrong" index2="' + i + '">错误</div></div>');
+                } else if (i >= 2 && i < 4) {
+                    $("#line2").append('<div class="item1" id="subject' + i + '">' + words[randNum1][randNum2] + '</div>');
+                    $("#judge2").append('<div class="item2"><div class="yes" index1="' + i + '">正确</div><div class="wrong" index2="' + i + '">错误</div></div>');
+                } else if (i >= 4 && i < 6) {
+                    $("#line3").append('<div class="item1" id="subject' + i + '">' + words[randNum1][randNum2] + '</div>');
+                    $("#judge3").append('<div class="item2"><div class="yes" index1="' + i + '">正确</div><div class="wrong" index2="' + i + '">错误</div></div>');
+                } else if (i >= 6 && i < 8) {
+                    $("#line4").append('<div class="item1" id="subject' + i + '">' + words[randNum1][randNum2] + '</div>');
+                    $("#judge4").append('<div class="item2"><div class="yes" index1="' + i + '">正确</div><div class="wrong" index2="' + i + '">错误</div></div>');
+                } else {
+                    $("#line5").append('<div class="item1" id="subject' + i + '">' + words[randNum1][randNum2] + '</div>');
+                    $("#judge5").append('<div class="item2"><div class="yes" index1="' + i + '">正确</div><div class="wrong" index2="' + i + '">错误</div></div>');
+                }
+            }
+            $("#validLast").css("display", "flex");
+            // //时间倒计时
+            // var lastHour = 0;       //小时
+            // var lastMinute = 5;    //分钟
+            // var lastSecond = 0;    //秒
+            // var lastInterval = setInterval(function () {
+            //     if (lastSecond > 0) {
+            //         lastSecond -= 1;
+            //     } else if (lastMinute > 0) {
+            //         lastMinute -= 1;
+            //         lastSecond = 59;
+            //     } else if (lastHour > 0) {
+            //         lastHour -= 1;
+            //         lastMinute = 59;
+            //         lastSecond = 59;
+            //     }
+            //     if (lastHour == 0 && lastMinute == 0 && lastSecond == 0) {
+            //         clearInterval(lastInterval);
+            //         lastInterval = null;
+            //         $('#validLast').css("display", "none");
+            //         $("#fraction").css("display", "flex");
+            //         for (let i = 0; i < scoreArr.length; i++) {
+            //             score += scoreArr[i];
+            //         }
+            //         $("#fraction").html(score + " 分");
+            //         $(".error").css("color", "red");
+            //         $(".error").css("text-decoration", "line-through");
+            //         $(".correct").css("display", "flex");
+            //         $("#submit").html("再来一次");
+            //     } else {
+            //         var tmp = '';
+            //         if (lastHour > 0) {
+            //             tmp += lastHour + ' ∶ ';
+            //         }
+            //         if (lastHour >= 0 || lastMinute > 0) {
+            //             tmp += (lastMinute > 9 ? '' : '0') + lastMinute + ' ∶ ';
+            //         }
+            //         tmp += (lastSecond > 9 ? '' : '0') + lastSecond + ' ';
+            //         $('#validLast').html(tmp);
+            //     }
+            // }, 1000);
+        } else {
+            // clearInterval(lastInterval);
+            // lastInterval = null;
+            $('#validLast').css("display", "none");
+            $("#fraction").css("display", "flex");
+            for (let i = 0; i < scoreArr.length; i++) {
+                if (scoreArr[i] == 0) {
+                    $("#subject" + i).css("background-color", "mistyrose");
+                    $("#subject" + i).css("border", "1px solid pink");
+                } else {
+                    $("#subject" + i).css("background-color", "honeydew");
+                    $("#subject" + i).css("border", "1px solid yellowgreen");
+                }
+                score += scoreArr[i];
+                console.log(score);
+            }
+            $("#fraction").html(score + " 分");
+            $(".error").css("color", "red");
+            // $(".error").css("text-decoration", "line-through");
+            $(".correct").css("display", "flex");
+            $("#judge1").css("pointer-events", "none");
+            $("#judge2").css("pointer-events", "none");
+            $("#judge3").css("pointer-events", "none");
+            $("#judge4").css("pointer-events", "none");
+            $("#judge5").css("pointer-events", "none");
+            $("#submit").html("再来一次");
+        }
+    });
+
+
+    $("body").on("click", ".yes", function () {
+        $(this).css("background-color", "yellowgreen");
+        $(this).css("color", "white");
+        $(this).css("opacity", "1");
+        $(this).siblings(".wrong").css("background-color", "white");
+        $(this).siblings(".wrong").css("color", "orange");
+        $(this).siblings(".wrong").css("opacity", ".3");
+        if ($("#subject" + $(this).attr("index1")).html().indexOf("<") < 0) {
+            scoreArr[$(this).attr("index1")] = 10;
+        } else {
+            scoreArr[$(this).attr("index1")] = 0;
+        }
+    });
+
+
+    $("body").on("click", ".wrong", function () {
+        $(this).css("background-color", "orange");
+        $(this).css("color", "white");
+        $(this).css("opacity", "1");
+        $(this).siblings(".yes").css("background-color", "white");
+        $(this).siblings(".yes").css("color", "yellowgreen");
+        $(this).siblings(".yes").css("opacity", ".3");
+        if ($("#subject" + $(this).attr("index2")).html().indexOf("<") >= 0) {
+            scoreArr[$(this).attr("index2")] = 10;
+        } else {
+            scoreArr[$(this).attr("index2")] = 0;
+        }
+    });
+
+
+    // $("#judge2").append('<div class="item2"><div class="yes"><svg t="1680170709782" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1694" width="30" height="30"><path d="M512 85.333333c235.648 0 426.666667 191.018667 426.666667 426.666667s-191.018667 426.666667-426.666667 426.666667S85.333333 747.648 85.333333 512 276.352 85.333333 512 85.333333z m-74.965333 550.4L346.453333 545.152a42.666667 42.666667 0 1 0-60.330666 60.330667l120.704 120.704a42.666667 42.666667 0 0 0 60.330666 0l301.653334-301.696a42.666667 42.666667 0 1 0-60.288-60.330667l-271.530667 271.488z" fill="#52C41A" p-id="1695"></path></svg></div><div class="wrong"><svg t="1680170692841" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1492" width="30" height="30"><path d="M512 85.333333C276.352 85.333333 85.333333 276.352 85.333333 512s191.018667 426.666667 426.666667 426.666667 426.666667-191.018667 426.666667-426.666667S747.648 85.333333 512 85.333333z m128.426667 606.72l-129.749334-129.749333-129.066666 129.024a35.968 35.968 0 1 1-50.901334-50.901333l129.024-129.066667-130.432-130.432A35.968 35.968 0 1 1 380.16 329.984l130.474667 130.474667 129.706666-129.749334a35.968 35.968 0 1 1 50.944 50.901334l-129.749333 129.749333 129.749333 129.749333a35.968 35.968 0 1 1-50.901333 50.944z" fill="#FF3838" p-id="1493"></path></svg></div></div>');
+
+    // $("#fraction").append('100分');
+    // $(".correct").css("color", "green");
+    // $(".error").css("color", "red");
+    // $(".error").css("font-weight", "bold");
+
+
+
+</script>
+
+</html>
