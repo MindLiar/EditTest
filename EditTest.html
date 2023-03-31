@@ -83,6 +83,10 @@
         user-select: none;
     }
 
+    .item1:hover{
+        transform: scale(1.04);
+    }
+
     .item2 {
         margin: 15px;
         width: 135px;
@@ -94,6 +98,8 @@
         cursor: pointer;
         user-select: none;
     }
+
+    
 
     .yes {
         margin: 0 10px 0 0;
@@ -145,6 +151,8 @@
         /* margin: 0 5px 0 5px; */
     }
 
+    
+
     #submit {
         /* margin: 80px 0 0 0; */
         width: 120px;
@@ -156,6 +164,11 @@
         border-radius: 5px;
         color: white;
     }
+
+    #submit:hover{
+        transform: scale(1.04);
+    }
+
 </style>
 <script src="jquery.js"></script>
 <script>
@@ -594,7 +607,7 @@
         ["委<font class='error'>惋</font><font class='correct'>（婉）</font>", "委婉"],
         ["<font class='error'>惟</font><font class='correct'>（帷）</font>幄", "帷幄"],
         ["旋<font class='error'>窝</font><font class='correct'>（涡）</font>", "旋涡"],
-        ["<font class='error'>安</font><font class='correct'>（枉）</font>费", "枉费"],
+        ["<font class='error'>妄</font><font class='correct'>（枉）</font>费", "枉费"],
         ["<font class='error'>帏</font><font class='correct'>（帷）</font>幕", "帷幕"],
         ["<font class='error'>污</font><font class='correct'>（诬）</font>告", "诬告"],
         ["白<font class='error'>晰</font><font class='correct'>（皙）</font>", "白皙"],
@@ -754,7 +767,8 @@
         if ($("#submit").html() == "开始" || $("#submit").html() == "再来一次") {
             scoreArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             score = 0;
-            $(".row").css("pointer-events", "auto");
+            $("#judge1").css("pointer-events", "auto");
+            $("#judge2").css("pointer-events", "auto");
             $(".item1").css("background-color", "aliceblue");
             $(".item1").css("border", "1px solid lightskyblue");
             $(".row").html("");
@@ -841,9 +855,10 @@
             }
             $("#fraction").html(score + " 分");
             $(".error").css("color", "red");
-            $(".error").css("text-decoration", "line-through");
+            // $(".error").css("text-decoration", "line-through");
             $(".correct").css("display", "flex");
-            $(".row").css("pointer-events", "none");
+            $("#judge1").css("pointer-events", "none");
+            $("#judge2").css("pointer-events", "none");
             $("#submit").html("再来一次");
         }
     });
