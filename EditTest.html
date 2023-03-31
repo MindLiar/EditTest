@@ -38,6 +38,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        transform: scale(1.2);
     }
 
     #validLast {
@@ -63,9 +64,13 @@
         display: none;
     }
 
+    #judge1{
+        margin: 0 0 10px 0;
+    }
+
     .item1 {
-        margin: 20px;
-        width: 120px;
+        margin: 15px;
+        width: 135px;
         height: 35px;
         background-color: aliceblue;
         border: 1px solid lightskyblue;
@@ -79,8 +84,8 @@
     }
 
     .item2 {
-        margin: 20px;
-        width: 120px;
+        margin: 15px;
+        width: 135px;
         height: 35px;
         display: flex;
         justify-content: center;
@@ -102,6 +107,7 @@
         color: yellowgreen;
         opacity: .3;
         background-color: white;
+        transform: scale(0.9);
     }
 
     .yes:hover {
@@ -121,6 +127,7 @@
         border-radius: 5px;
         color: orange;
         opacity: .3;
+        transform: scale(0.9);
     }
 
     .wrong:hover {
@@ -701,7 +708,7 @@
         ["<font class='error'>绉</font><font class='correct'>（皱）</font>纹", "皱纹"],
         ["锱<font class='error'>珠</font><font class='correct'>（铢）</font>", "锱铢"],
         ["<font class='error'>嘱</font><font class='correct'>（瞩）</font>目", "瞩目"],
-        ["-<font class='error'>柱</font><font class='correct'>（炷）</font>香", "-炷香"],
+        ["一<font class='error'>柱</font><font class='correct'>（炷）</font>香", "一炷香"],
         ["化<font class='error'>装</font><font class='correct'>（妆）</font>品", "化妆品"],
         ["<font class='error'>姿</font><font class='correct'>（恣）</font>意", "恣意"],
         ["<font class='error'>凑</font><font class='correct'>（奏）</font>效", "奏效"],
@@ -734,7 +741,6 @@
         ["<font class='error'>搬</font><font class='correct'>（班）</font>门弄斧", "班门弄斧"],
         ["可见一<font class='error'>般</font><font class='correct'>（斑）</font>", "可见一斑"],
         ["安<font class='error'>帮</font><font class='correct'>（邦）</font>定国", "安邦定国"],
-
     ];
 </script>
 <script>
@@ -748,6 +754,7 @@
         if ($("#submit").html() == "开始" || $("#submit").html() == "再来一次") {
             scoreArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             score = 0;
+            $(".row").css("pointer-events", "auto");
             $(".item1").css("background-color", "aliceblue");
             $(".item1").css("border", "1px solid lightskyblue");
             $(".row").html("");
@@ -836,6 +843,7 @@
             $(".error").css("color", "red");
             $(".error").css("text-decoration", "line-through");
             $(".correct").css("display", "flex");
+            $(".row").css("pointer-events", "none");
             $("#submit").html("再来一次");
         }
     });
